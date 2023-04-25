@@ -9,5 +9,7 @@ import { breakingFunction } from 'projects/breaking-changes-lib/src/public-api';
 export class AppComponent {
   title = 'AngularMagicSchematics';
 
-  public brokenThing: string = breakingFunction('hello world', 3);
+  // public brokenThing: string = breakingFunction('hello world',3);
+  public brokenThing: string = breakingFunction('hello world',3);
+
 }
