@@ -1,6 +1,7 @@
 import { Rule, SchematicContext, Tree } from '@angular-devkit/schematics';
 import { tsquery } from '@phenomnomnominal/tsquery';
 import * as ts from 'typescript';
+import * as prettier from 'prettier';
 
 function swap(source: string , x1: number, x2: number, y1: number, y2: number) {
   const first = source.slice(x1, x2 + 1);
@@ -13,7 +14,8 @@ function swap(source: string , x1: number, x2: number, y1: number, y2: number) {
 export function fixIt(_options: any): Rule {
   return (tree: Tree, _context: SchematicContext) => {
     const staged = tree.branch();
-    const files = staged.getDir('./src').visit(filePath => {
+    console.log('getDir', staged.getDir('./src'));
+    staged.getDir('./src').visit(filePath => {
       if (!filePath.endsWith('component.ts')) {
         return;
       }
@@ -31,9 +33,9 @@ export function fixIt(_options: any): Rule {
         for (let index = 0; index < brokenFunctions.length; index++) {
           const brokenInstance = brokenFunctions[index] as ts.CallExpression;
           const argsToSwap= brokenInstance.arguments;
-          stagedFile = swap(fileContents, argsToSwap[0].pos, argsToSwap[0].end -1, argsToSwap[1].pos, argsToSwap[1].end - 1)
+          stagedFile = swap(stagedFile, argsToSwap[0].pos, argsToSwap[0].end -1, argsToSwap[1].pos, argsToSwap[1].end - 1)
         }
-        tree.overwrite(filePath, stagedFile);
+        tree.overwrite(filePath, prettier.format(stagedFile, {parser: 'typescript'}));
       }
     });
     return tree;
